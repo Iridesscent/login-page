@@ -1,0 +1,156 @@
+﻿$(document).ready(function () {
+
+    $('#username').focus();
+
+
+    $(document).keydown(function (key) {
+        // "Enter" = 13
+        if (key.keyCode == '13') {
+            if ($('#form_signin').is(":visible")) {
+                $('#btnLogOn').click();
+            } else if ($('#form_register').is(":visible")) {
+                $('#btnRegisterSend').click();
+            } else if ($('#form_forgot').is(":visible")) {
+                $('#btnForgotSend').click();
+            }
+        } else if (key.keyCode == '27') {
+            if ($('#form_register').is(":visible")) {
+                $('#btnRegisterCancel').click();
+            } else if ($('#form_forgot').is(":visible")) {
+                $('#btnForgotCancel').click();
+            }
+        }
+    });
+
+    $('#btnRegister').click(function () {
+        $('#form_signin').hide();
+        $('#form_forgot').hide();
+        $('#form_register').fadeIn(500);
+        $('#r_username').focus();
+
+        // clear inputs
+        $('#username').val("");
+        $('#password').val("");
+    });
+
+    $('#btnRegisterCancel').click(function () {
+        $('#form_register').hide();
+        $('#form_signin').fadeIn(500);
+        $('#username').focus();
+
+        // clear inputs
+        $('#r_username').val("");
+        $('#r_email').val("");
+        $('#r_password').val("");
+        $('#r_confirm').val("");
+    });
+
+    $('#btnForgot').click(function () {
+        $('#form_signin').hide();
+        $('#form_register').hide();
+        $('#form_forgot').fadeIn(500);
+        $('#rec_email').focus();
+
+        // clear inputs
+        $('#username').val("");
+        $('#password').val("");
+    });
+
+    $('#btnForgotCancel').click(function () {
+        $('#form_forgot').hide();
+        $('#form_signin').fadeIn(500);
+        $('#username').focus();
+
+        // clear inputs
+        $('#rec_email').val("");
+    });
+
+
+    /*
+    按下button按钮触发jquery里的事件，ajax和后台C#进行交互
+    */
+    $('#btnLogOn').click(function () {
+
+
+        $.ajax({
+
+            type: "POST",
+
+            url: "Default.aspx/doBtnLogOn_Click",
+            data: "{'username':'" + $('#username').val() + "','password':'" + $('#password').val() + "'}",
+            dataType: "json",
+            contentType: "application/json; charset=utf-8",
+            success: function (data) {
+
+                document.getElementById("wrongLogin").innerHTML = data.d;
+            },
+            error: function (err) {
+                alert("ajax error!");
+            }
+        });
+
+        return false;
+    });
+    
+    $('#btnRegisterSend').click(function () {
+        $.ajax({
+
+            type: "POST",
+
+            url: "Default.aspx/doBtnRegisterSend_Click",
+            contentType: "application/json; charset=utf-8",
+            data: "{'r_username':'" + $('#r_username').val() + "','r_password':'" + $('#r_password').val() +
+                    "','r_email':'" + $('#r_email').val() + "','r_confirm':'" + $('#r_confirm').val() + "'}",
+            dataType: "json",
+            success: function (data) {
+
+                document.getElementById("wrongRegister").innerHTML = data.d;
+            },
+            error: function (err) {
+                alert("ajax error!");
+            }
+        });
+    });
+
+    $('#btnForgotSend').click(function () {
+        /*
+        $.ajax({
+
+            type: "POST",
+
+            url: "Default.aspx/doBtnForgotSend_Click",
+            data: "{'rec_email':'" + $('#rec_email').val() + "'}",
+            dataType: "json",
+            contentType: "application/json; charset=utf-8",
+            success: function (data) {
+
+                document.getElementById("wrongForgot").innerHTML = data.d;
+            },
+            error: function (err) {
+                alert("ajax error!");
+            }
+        });
+        */
+
+        $.ajax({
+
+            type: "get",
+
+            url: "http://api.thinkpage.cn/v3/weather/now.json?key=nj5unf221evaww6j&location=beijing&language=zh-Hans&unit=c",
+            async: false,
+            dataType: "jsonp",
+            contentType: "application/json; charset=utf-8",
+            jsonp: "jsoncallback",
+            jsonpCallback: "success_jsonpCallback",
+            success: function (data) {
+                document.writeln(data.results[0].location.name);
+            },
+            error: function (err) {
+                alert("ajax error!");
+            }
+        });
+       
+        return false;
+    });
+
+});
